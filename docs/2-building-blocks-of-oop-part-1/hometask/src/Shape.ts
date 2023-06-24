@@ -29,7 +29,7 @@ export abstract class Shape {
     let perimeter: number = 0;
     const points = [...this.points, this.points[0]]
 
-    for(let i = 0; i < points.length; i++) {
+    for(let i = 0; i < points.length - 1; i++) {
       const currentPoint = points[i];
       const nextPoint = points[i + 1];
 
