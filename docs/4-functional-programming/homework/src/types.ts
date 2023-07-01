@@ -25,3 +25,6 @@ export interface ExecutorUser extends User {
   possibilities: Array<Demand>;
 }
 
+type WithDistance<T extends {position: Point}> = T & { distance: number }
+
+export type ClientUserWithDistance = WithDistance<ClientUser>
