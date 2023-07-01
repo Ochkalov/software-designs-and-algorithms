@@ -1,10 +1,10 @@
-import { Either, fromPromise, ap, right, getOrElse, flatten, left, isLeft } from './fp/either';
+import { Either, fromPromise, ap, right, getOrElse, flatten, left } from './fp/either';
 import { pipe } from './fp/utils';
 import { fetchClient, fetchExecutor } from './fetching';
 import { ClientUser, ExecutorUser, ClientUserWithDistance } from './types';
 import { map, sort } from './fp/array';
 import { Maybe, fromNullable, isSome, isNone } from './fp/maybe';
-import { fromCompare, ordNumber, revert } from './fp/ord';
+import { Ord, fromCompare, ordNumber, revert } from './fp/ord';
 import { setoidString } from './fp/setoid';
 import { distance } from './utils';
 
@@ -30,29 +30,29 @@ export enum SortBy {
 }
 
 export const show = (sortBy: SortBy) => (clients: Array<ClientUser>) => (executor: ExecutorUser): Either<string, string> => {
-  const clientsFilteredByDemand = clients.filter(({demands}) => isNone(demands) || demands.value.every(demand => executor.possibilities.includes(demand)))
-  const isResultRight = clientsFilteredByDemand.length
+  const clientsFilteredByDemand: ClientUser[] = clients.filter(({demands}) => isNone(demands) || demands.value.every(demand => executor.possibilities.includes(demand)))
+  const isResultRight: number = clientsFilteredByDemand.length
 
-  const getResultRight = () => {
-    const isSortedByDistance = setoidString.equals(sortBy, SortBy.distance)
+  const getResultRight = (): Either<never, string> => {
+    const isSortedByDistance: boolean = setoidString.equals(sortBy, SortBy.distance)
     const mapDistanceFn = map<ClientUser, ClientUserWithDistance>((client: ClientUser) => ({...client, distance: distance(executor.position, client.position)}))
-    const clientUserSortComparator = isSortedByDistance
+    const clientUserSortComparator: Ord<ClientUserWithDistance> = isSortedByDistance
     ? fromCompare<ClientUserWithDistance>((clientA, clientB) => ordNumber.compare(clientA.distance, clientB.distance))
     : fromCompare<ClientUserWithDistance>((clientA, clientB) => revert(ordNumber).compare(clientA.reward, clientB.reward))
     const clientUserSortFn = sort(clientUserSortComparator)
     const mapClientStringFn = map(({name, distance, reward}: ClientUserWithDistance) => `\nname: ${name}, distance: ${distance}, reward: ${reward}`)
-    const clientUsersWithDistance = mapDistanceFn(clientsFilteredByDemand)
-    const sortedClientUsers = clientUserSortFn(clientUsersWithDistance)
-    const clientsStringArr = mapClientStringFn(sortedClientUsers)
-    const clientsStringContent = clientsStringArr.join('')
+    const clientUsersWithDistance: ClientUserWithDistance[] = mapDistanceFn(clientsFilteredByDemand)
+    const sortedClientUsers: ClientUserWithDistance[] = clientUserSortFn(clientUsersWithDistance)
+    const clientsStringArr: string[] = mapClientStringFn(sortedClientUsers)
+    const clientsStringContent: string = clientsStringArr.join('')
 
-    const title = isResultRight
+    const title: string = isResultRight
     ?  clientsFilteredByDemand.length === clients.length
       ? 'This executor meets all demands of all clients!\n'
       : `This executor meets the demands of only ${clientsFilteredByDemand.length} out of ${clients.length} clients\n\n`
     : ''
     const sortingTypeString = isSortedByDistance ? 'distance to executor' : 'highest reward';
-    const subTitle = `Available clients sorted by ${sortingTypeString}:`
+    const subTitle: string = `Available clients sorted by ${sortingTypeString}:`
 
     return right(`${title}${subTitle}${clientsStringContent}`)
   }
