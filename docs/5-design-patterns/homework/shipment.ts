@@ -1,7 +1,7 @@
 import { Context, IShipment, IdGenerator, ItemType, ItemWeight, ShipmentData, Strategy, ZipCodeTypes } from './types'
 import { AirEastStrategy, ChicagoSprintStrategy, PacificParcelStrategy } from './shipperStrategy';
 
-export class Shipment implements IShipment{
+export class Shipment implements IShipment {
   private shipmentID: number;
   private weight: number;
   private fromAddress: string;

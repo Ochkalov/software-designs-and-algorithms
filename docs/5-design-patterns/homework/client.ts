@@ -2,6 +2,7 @@ import { Shipment } from './shipment';
 import { IApi, ShipmentData, IdGenerator, IShipment, Context } from './types';
 import { FakeIdGenerator } from './id-generator';
 import { ShipperContext } from './shipperStrategy';
+import { ShipmentWithCodeDecorator } from './shipmentDecorator';
 
 export class Client implements IApi {
   private idGenerator: IdGenerator;
@@ -12,7 +13,9 @@ export class Client implements IApi {
   }
 
   public shipItem(shipmentData: ShipmentData): string {
-    const shipment: IShipment = Shipment.getInstance(shipmentData, this.idGenerator, this.shipperCostContext);
+    const { fragile, doNotLeave, returnReceiptRequested } = shipmentData
+    let shipment: IShipment = Shipment.getInstance(shipmentData, this.idGenerator, this.shipperCostContext);
+    shipment = new ShipmentWithCodeDecorator(shipment, fragile, doNotLeave, returnReceiptRequested); 
     return shipment?.ship();
   }
 }
