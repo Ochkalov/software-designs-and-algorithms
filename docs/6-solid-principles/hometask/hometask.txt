@@ -1,0 +1,65 @@
+1.
+Single Responsibility Principle
+auth.ts (lines 1-100):  https://github.com/angular/angularfire/blob/master/src/auth/auth.ts#L1-L100
+AngularFireAuth class has a single responsibility of providing authentication services.
+
+Open/Closed Principle
+firestore.ts (lines 1-100): https://github.com/angular/angularfire/blob/master/src/firestore/firestore.ts#L1-L100
+AngularFirestore class is closed for modification but open for extension.
+
+Liskov Substitution Principle
+dom_sanitization_service.ts  https://github.com/angular/angular/blob/main/packages/platform-browser/src/security/dom_sanitization_service.ts
+the DomSanitizer class is a base class for different sanitization classes, such as SafeHtml, SafeStyle, SafeScript, SafeUrl, and SafeResourceUrl. These classes can be used interchangeably without affecting the behavior of the program.
+
+ Interface Segregation Principle
+ storage.ts (lines 1-100): https://github.com/angular/angularfire/blob/master/src/storage/storage.ts#L1-L100
+ AngularFireStorage class implements multiple interfaces such as AngularFireUploadTask, AngularFireListObservable, and AngularFireObjectObservable.
+
+ Dependency Inversion Principle
+ database.ts (lines 1-100): https://github.com/angular/angularfire/blob/master/src/database/database.ts#L1-L100
+ AngularFireDatabase class depends on the QueryFn interface instead of a concrete implementation.
+
+
+ 2. Violations of SOLID Principles:
+Single Responsibility Principle (SRP):
+Violation
+Since Angular has a lot of features for building complex web applications, many classes in the framework may violate the Single Responsibility Principle. For example, the Http service, which provides functionality for making HTTP requests, also handles error handling, serialization and deserialization, and setting headers and query parameters. This violates the SRP, as a class should have a single responsibility.
+
+Solution
+To address this violation, the Http service could be split into smaller, single-responsibility services, such as a HttpClient responsible for making HTTP requests, a HeaderService for setting headers, and a QueryParameterService for setting query parameters. This would make the code more modular, testable, and easier to maintain.
+
+Open/Closed Principle (OCP)
+Violation
+The Component class in Angular also violates the Open/Closed Principle, as it frequently requires modification when new features are added. For example, modifying the component's template requires modifying the component's definition code. This could lead to a knock-on effect, causing changes to other components that rely on the modified component.
+
+Solution
+To address this violation, the component's template could be extracted into a separate file, decoupling it from the component's definition code. This would allow for easier modification of the component's template without affecting the component's definition code and the rest of the codebase.
+
+Liskov Substitution Principle (LSP)
+Violation
+Angular may also violate Liskov Substitution Principle in some situations. For example, in some cases, a child component may rely on the properties or methods of its parent component, which may break if the parent component is replaced by a child component of another type.
+
+Solution
+To address this violation, the dependency injection system of Angular could be used to inject dependencies as services instead of relying on the inheritance hierarchy to establish the relationship between components. This would allow for easier and more flexible code reuse.
+
+Interface Segregation Principle (ISP)
+Violation
+Angular may also violate the Interface Segregation Principle, as some classes implement interfaces that they don't need, leading to unnecessary code complexity and coupling.
+
+Solution
+To address this violation, interfaces could be split into smaller, more focused interfaces. This would allow classes to only implement the interfaces that they strictly need, making the code simpler, more focused, and easier to maintain.
+
+Dependency Inversion Principle (DIP)
+Violation
+Angular may also violate the Dependency Inversion Principle, particularly when writing components that rely on external libraries. In some cases, the code may directly depend on the concrete implementation of a library, making it harder to change the library or swap it out for another one.
+
+Solution
+To address this violation, the concepts of Abstraction and Inversion of Control could be used to abstract away the concrete implementation of the library into an interface, which would be passed as a dependency to the component. This would make the code more modular, testable, and easier to maintain.
+
+Violations of Other Principles:
+DRY Principle:
+Violation
+One common violation of the DRY principle in Angular is the repeated use of similar code across different components. In particular, similar code can be found for handling forms, validation, and data display across different components.
+
+Solution
+To address this violation, the common code could be extracted into a shared service or a custom Angular module, which can then be reused across different components. This would remove redundant code and simplify the codebase.
