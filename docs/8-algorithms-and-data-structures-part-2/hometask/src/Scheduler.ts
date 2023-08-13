@@ -5,4 +5,23 @@ export interface SchedulerI {
   run(): Promise<void>;
 }
 
-export class Scheduler implements SchedulerI {}
+export class Scheduler implements SchedulerI {
+  private taskQueue: PriorityQueue<() => Promise<any>> = new PriorityQueue();
+
+  postTask(task: () => Promise<any>, priority: number): void {
+    this.taskQueue.enqueue(task, priority);
+  }
+
+  async run(): Promise<void> {
+    const tasks: (() => Promise<any>)[] = [];
+
+    while (this.taskQueue.size() > 0) {
+      const task = this.taskQueue.dequeue();
+      if (task) {
+        tasks.push(task);
+      }
+    }
+
+    await Promise.all(tasks.map(task => task()));
+  }
+}
